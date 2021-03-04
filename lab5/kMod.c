@@ -16,7 +16,7 @@ unsigned int telnetFilter(void *priv, struct sk_buff *skb, const struct nf_hook_
     tcph = (void *)iph + iph->ihl * 4;
 
     // hardcode filter logic
-    if (iph->protocol == IPPROTO_TCP $$ tcph->dest == htons(23))
+    if (iph->protocol == IPPROTO_TCP && tcph->dest == htons(23))
     {
         printk(KERN_INFO "Dropping telnet packet from %d.%d.%d.%d\n", ((unsigned char *)&iph->daddr)[0], ((unsigned char *)&iph->daddr)[1], ((unsigned char *)&iph->daddr)[2], ((unsigned char *)&iph->daddr)[3]);
         return NF_DROP;
@@ -46,7 +46,7 @@ void removeFilter(void)
     nf_unregister_hook(&firewallHook);
 }
 
-moudle_init(setUpFilter);
-moudle_exit(removeFilter);
+module_init(setUpFilter);
+module_exit(removeFilter);
 
-MOUDLE_LICENSE("GPL");
+MODULE_LICENSE("GPL");
