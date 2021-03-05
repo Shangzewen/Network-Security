@@ -17,14 +17,14 @@ unsigned int sshFilter(void *priv, struct sk_buff *skb, const struct nf_hook_sta
 
     // hardcode filter logic
     // only allow 10.0.2.8 to ssh to machine A
-    if (tcph->dest == htons(22) && ((unsigned char *)&iph->daddr)[0] == 10 && ((unsigned char *)&iph->daddr)[1] == 0 && ((unsigned char *)&iph->daddr)[2] == 2 && ((unsigned char *)&iph->daddr)[3] == 8)
+    if (tcph->dest == htons(22) && ((unsigned char *)&iph->saddr)[0] == 10 && ((unsigned char *)&iph->saddr)[1] == 0 && ((unsigned char *)&iph->saddr)[2] == 2 && ((unsigned char *)&iph->saddr)[3] == 8)
     {
-        printk(KERN_INFO "Accepting packet from %d.%d.%d.%d\n", ((unsigned char *)&iph->daddr)[0], ((unsigned char *)&iph->daddr)[1], ((unsigned char *)&iph->daddr)[2], ((unsigned char *)&iph->daddr)[3]);
+        printk(KERN_INFO "Accepting packet from %d.%d.%d.%d\n", ((unsigned char *)&iph->saddr)[0], ((unsigned char *)&iph->saddr)[1], ((unsigned char *)&iph->saddr)[2], ((unsigned char *)&iph->saddr)[3]);
         return NF_ACCEPT;
     }
     else
     {
-        printk(KERN_INFO "Drop packet from %d.%d.%d.%d\n", ((unsigned char *)&iph->daddr)[0], ((unsigned char *)&iph->daddr)[1], ((unsigned char *)&iph->daddr)[2], ((unsigned char *)&iph->daddr)[3]);
+        printk(KERN_INFO "Drop packet from %d.%d.%d.%d\n", ((unsigned char *)&iph->saddr)[0], ((unsigned char *)&iph->saddr)[1], ((unsigned char *)&iph->saddr)[2], ((unsigned char *)&iph->saddr)[3]);
         return NF_DROP;
     }
 }
