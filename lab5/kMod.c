@@ -32,7 +32,7 @@ int setUpFilter(void)
     printk(KERN_INFO "Registering a Telnet filter. \n");
     firewallHook.hook = telnetFilter;
     // use the netfilter hook
-    firewallHook.hooknum = NF_INET_POST_ROUTING;
+    firewallHook.hooknum = NF_INET_LOCAL_IN;
     firewallHook.pf = PF_INET;
     firewallHook.priority = NF_IP_PRI_FIRST;
 
