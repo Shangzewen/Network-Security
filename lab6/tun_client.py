@@ -22,12 +22,12 @@ ifname = ifname_bytes.decode('UTF-8')[:16].strip("\x00")
 print("Interface name : {}".format(ifname))
 os.system("ip addr add 192.168.53.99/24 dev {}".format(ifname))
 os.system("ip link set dev {} up".format(ifname))
+
+#  Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 while (True):
+    # get the packey from the tun interface
     packet = os.read(tun, 2048)
     if True:
-        ip = IP(packet)
-        ip.show()
-        #newip = IP(src = '1.2.3.4',dst = ip.src)
-        # #newpkt = newip/ip.payload
-        # #os.write(tun,bytes(newpkt))
-        os.write(tun, "Shang Zewen")
+        # Send packet through channel
+        sock.sendto(packet, ("10.0.2.9", 9090))

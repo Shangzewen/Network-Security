@@ -24,7 +24,4 @@ print("Interface name : {}".format(ifname))
 # while (True):
 #     time.sleep(10)
 while (True):
-    packet = os.read(tun, 2048)
-    if True:
-        ip = IP(packet)
-        ip.show()
+    time.sleep(10)
