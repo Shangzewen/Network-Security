@@ -27,4 +27,4 @@ while (True):
     packet = os.read(tun, 2048)
     if True:
         ip = IP(packet)
-        print(ip.summary())
+        ip.show()
