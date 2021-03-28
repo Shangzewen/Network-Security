@@ -28,8 +28,16 @@ PORT = 9090
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((IP_A, PORT))
 while True:
-    data, (ip, port) = sock.recvfrom(2048)
-    print("{}:{} --> {}:{}".format(ip, port, IP_A, PORT))
-    pkt = IP(data)
-    print("   Inside: {} ----> {}".format(pkt.src, pkt.dst))
-    os.write(tun, bytes(pkt))
+    #  this will block until at least one interface is ready
+    ready, _, _ = select([sock, tun], [], [])
+    for fd in ready:
+        if fd is sock:
+            data, (ip, port) = sock.recvfrom(2048)
+            pkt = IP(data)
+            print(" From socket <==: {} ----> {}".format(pkt.src, pkt.dst))
+            os.write(tun, bytes(pkt))
+        if fd is tun:
+            packet = os.read(tun, 2048)
+            pkt = IP(data)
+            print(" From tun <==: {} ----> {}".format(pkt.src, pkt.dst))
+            os.write(sock, bytes(pkt))
