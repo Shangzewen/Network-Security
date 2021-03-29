@@ -20,8 +20,7 @@ ifname_bytes = fcntl.ioctl(tun, TUNSETIFF, ifr)
 # get the interface name
 ifname = ifname_bytes.decode('UTF-8')[:16].strip("\x00")
 print("Interface name : {}".format(ifname))
-
-# while (True):
-#     time.sleep(10)
+os.system("ip addr add 192.168.53.99/24 dev {}".format(ifname))
+os.system("ip link set dev {} up".format(ifname))
 while (True):
     time.sleep(10)

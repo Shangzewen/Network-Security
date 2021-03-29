@@ -38,6 +38,6 @@ while True:
             os.write(tun, bytes(pkt))
         if fd is tun:
             packet = os.read(tun, 2048)
-            pkt = IP(data)
+            pkt = IP(packet)
             print(" From tun <==: {} ----> {}".format(pkt.src, pkt.dst))
-            os.write(sock, bytes(pkt))
+            sock.sendto(packet, ("10.0.2.7", 9090))
