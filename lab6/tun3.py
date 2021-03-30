@@ -30,4 +30,4 @@ while (True):
         #newip = IP(src = '1.2.3.4',dst = ip.src)
         # #newpkt = newip/ip.payload
         # #os.write(tun,bytes(newpkt))
-        os.write(tun, "Shang Zewen")
+        os.write(tun, "hello world")

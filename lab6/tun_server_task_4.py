@@ -20,7 +20,7 @@ ifname_bytes = fcntl.ioctl(tun, TUNSETIFF, ifr)
 # get the interface name
 ifname = ifname_bytes.decode('UTF-8')[:16].strip("\x00")
 print("Interface name : {}".format(ifname))
-os.system("ip addr add 192.168.53.99/24 dev {}".format(ifname))
+os.system("ip addr add 192.168.53.90/24 dev {}".format(ifname))
 os.system("ip link set dev {} up".format(ifname))
 IP_A = "10.0.2.9"
 PORT = 9090
